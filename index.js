@@ -21,7 +21,58 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     // run the start function after the connection is made to prompt the user
+    start();
 });
+
+function start(){
+    inquirer
+        .prompt({
+            name: "action",
+            type: "list",
+            message: "What would you like to do?",
+            choices:[
+                "Add department",
+                "Add roles",
+                "Add employees",
+                "View departments",
+                "View roles",
+                "View employees",
+                "Update employee roles",
+                "exit"
+            ]
+        })
+        .then(function(answer){
+            switch (answer.action){
+                case "Add department":
+                    addDepartment();
+                    break;
+
+                case "Add roles":
+                    addRoles();
+                    break;
+
+                case "Add employees":
+                    addEmployees();
+                    break;
+
+                case "View departments":
+                    viewDepartments();
+                    break;
+
+                case "View roles":
+                    viewRoles();
+                    break;
+
+                case "Update employee roles"
+                    updateRole();
+                    break;
+
+                case "exit":
+                    connection.end();
+                    break;
+            }
+        })
+}
 
 
 // Build a command-line application that at a minimum allows the user to:
