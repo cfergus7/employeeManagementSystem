@@ -23,7 +23,7 @@ connection.connect(function (err) {
     // run the start function after the connection is made to prompt the user
     start();
 });
-
+// Build a command-line application that at a minimum allows the user to:
 function start(){
     inquirer
         .prompt({
@@ -43,22 +43,23 @@ function start(){
         })
         .then(function(answer){
             switch (answer.action){
+                //   * Add departments
                 case "Add department":
                     addDepartment();
                     break;
-
+                // Add roles
                 case "Add roles":
                     addRoles();
                     break;
-
+                // Add employees
                 case "Add employees":
                     addEmployees();
                     break;
-
+                // View departments
                 case "View departments":
                     viewDepartments();
                     break;
-
+                // View roles
                 case "View roles":
                     viewRoles();
                     break;
@@ -75,9 +76,9 @@ function start(){
 }
 
 
-// Build a command-line application that at a minimum allows the user to:
 
-//   * Add departments, roles, employees
+
+
 
 //   * View departments, roles, employees
 
@@ -86,9 +87,16 @@ function start(){
 // Bonus points if you're able to:
 
 //   * Update employee managers
+// UPDATE Customers
+// SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+// WHERE CustomerID = 1;
 
 //   * View employees by manager
 
 //   * Delete departments, roles, and employees
+//   TRUNCATE TABLE table_name;
 
 //   * View the total utilized budget of a department -- ie the combined salaries of all employees in that department
+// SELECT SUM(column_name)
+// FROM table_name
+// WHERE condition;
