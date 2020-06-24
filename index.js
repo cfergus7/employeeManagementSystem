@@ -74,7 +74,30 @@ function start(){
             }
         })
 }
+function addDepartment(){
+    
+    start()
+}
+function addRoles(){
 
+    start()
+}
+function addEmployees(){
+
+    start()
+}
+function viewDepartments(){
+
+    start()
+}
+function viewRoles(){
+
+    start()
+}
+function updateRole(){
+
+    start()
+}
 
 
 
