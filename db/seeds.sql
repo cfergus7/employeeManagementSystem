@@ -1,18 +1,18 @@
 USE employee_db;
 
-INSERT INTO departments (department)
+INSERT INTO department (name)
 VALUES ("Manager");
 
-INSERT INTO departments (department)
+INSERT INTO department (name)
 VALUES ("Chef");
 
-INSERT INTO departments (department)
+INSERT INTO department (name)
 VALUES ("Bartender");
 
-INSERT INTO departments (department)
+INSERT INTO department (name)
 VALUES ("Server");
 
-INSERT INTO departments (department)
+INSERT INTO department (name)
 VALUES ("Cook");
 
 INSERT INTO role (title, salary, department_id)
