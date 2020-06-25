@@ -66,14 +66,14 @@ function start() {
                 case "View roles":
                     viewRoles();
                     break;
-                
+
                 case "View employees":
                     viewEmployees();
                     break;
 
                 case "Update employee roles":
-                updateRole();
-                break;
+                    updateRole();
+                    break;
 
                 case "exit":
                     connection.end();
@@ -88,58 +88,57 @@ function addDepartment() {
             type: "input",
             message: "Enter the department ",
             name: "name"
-        }
-    ])
-    .then(function (res){
-        connection.query(
-            "INSERT INTO department SET ?",{
-                name: res.name
-            },
-            function (err, res){
-                if (err) {
-                    throw err;
+        }])
+        .then(function (res) {
+            connection.query(
+                "INSERT INTO department SET ?", {
+                    name: res.name
+                },
+                function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    console.table(res);
                 }
-                console.table(res);
-            }        
-        )
-    })
+            )
+        })
     start();
 };
 
 function addRoles() {
     inquirer
         .prompt([{
-            type: "input",
-            message: "Enter the employee title",
-            name: "title"
-        },
-        {
-            type: "input",
-            message: "Enter the employee salary",
-            name: "salary"
-        },
-        {
-            type: "input",
-            message: "Enter the employee department id",
-            name: "department_id"
-        }
-    ])
-    .then(function (res){
-        connection.query(
-            "INSERT INTO role SET ?", {
-                title: res.title,
-                salary: res.salary,
-                department_id: res.department_id
+                type: "input",
+                message: "Enter the employee title",
+                name: "title"
             },
-            function (err, res) {
-                if (err) {
-                    throw err;
-                }
-                console.table(res);
+            {
+                type: "input",
+                message: "Enter the employee salary",
+                name: "salary"
+            },
+            {
+                type: "input",
+                message: "Enter the employee department id",
+                name: "department_id"
             }
-        );
-        start();
-    })
+        ])
+        .then(function (res) {
+            connection.query(
+                "INSERT INTO role SET ?", {
+                    title: res.title,
+                    salary: res.salary,
+                    department_id: res.department_id
+                },
+                function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    console.table(res);
+                }
+            );
+            start();
+        })
 };
 
 function addEmployees() {
@@ -169,60 +168,37 @@ function addEmployees() {
             if (answer.first_name === '' || answer.last_name === '' || answer.role_id === '' || answer.manager_id === '') {
                 console.log("Enter a response for all fields or go back to main menu.");
                 inquirer
-                .prompt({
-                    type: "list",
-                    message: "Enter a response for all fields or go back to main menu.",
-                    name: "choices",
-                    choices: [
-                        "Add Employee",
-                        "Main Menu"
-                    ]
-                })
-                .then (function (res)   {
-                    if (res.choices === "Add Employee")    {
-                        addEmployees();
-                    }   else    {
-                        start();
-                    }
-                })
-                
-            } else {
-                connection.query("INSERT INTO employee SET ?",
-                    { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.role_id, manager_id: answer.manager_id }, function (err, res) {
-                        if (err) throw err;
-                        console.log("\n Database with added employee. \n");
-                        viewEmployees();
+                    .prompt({
+                        type: "list",
+                        message: "Enter a response for all fields or go back to main menu.",
+                        name: "choices",
+                        choices: [
+                            "Add Employee",
+                            "Main Menu"
+                        ]
                     })
-            } 
+                    .then(function (res) {
+                        if (res.choices === "Add Employee") {
+                            addEmployees();
+                        } else {
+                            start();
+                        }
+                    })
+
+            } else {
+                connection.query("INSERT INTO employee SET ?", {
+                    first_name: answer.first_name,
+                    last_name: answer.last_name,
+                    role_id: answer.role_id,
+                    manager_id: answer.manager_id
+                }, function (err, res) {
+                    if (err) throw err;
+                    console.log("\n Database with added employee. \n");
+                    viewEmployees();
+                })
+            }
         })
 }
-
-// function viewDepartments() {
-//     connection.query("SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
-//         if (err) throw err;
-//         console.log("\n All employees retrieved from database by department. \n");
-//         console.table(res);
-//         start();
-//     });
-// };
-
-// function viewEmployees(){
-//     connection.query("SELECT first_name, last_name, employee.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
-//         if (err) throw err;
-//         console.log("\n All employees retrieved from database by department. \n");
-//         console.table(res);
-//         start();
-//     });
-// };
-
-// function viewRoles() {
-//     connection.query("SELECT first_name, last_name, role.title FROM((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
-//         if (err) throw err;
-//         console.log("\n All employees retrieved from database by role. \n");
-//         console.table(res);
-//         start();
-//     });
-// };
 
 function viewEmployees() {
     const query = `
@@ -261,17 +237,61 @@ function viewRoles() {
 };
 
 function updateRole() {
-console.log("works")
+    connection.query("SELECT * FROM employee", function (err, employees) {
+        const choices = employees.map(o => {
+            return {
+                value: o.id,
+                name: `${o.first_name} ${o.last_name}`
+            };
+        });
+        inquirer
+            .prompt([{
+                    type: "rawlist",
+                    name: "updateEmpRole",
+                    message: "select employee to update role",
+                    choices: choices
+                },
+                {
+                    type: "list",
+                    message: "select new role",
+                    choices: [{
+                            value: 1,
+                            name: "Manager"
+                        },
+                        {
+                            value: 2,
+                            name: "Chef"
+                        },
+                        {
+                            value: 3,
+                            name: "Server"
+                        },
+                        {
+                            value: 4,
+                            name: "Bartender"
+                        },
+                        {
+                            value: 5,
+                            name: "Cook"
+                        }
+                    ],
+                    name: "newrole"
+                }
+            ])
+            .then(function (answer) {
+                console.log("about to update", answer, answer.newrole);
+
+                connection.query(
+                    "UPDATE employee SET role_id = ? WHERE id = ?",
+                    [answer.newrole, answer.updateEmpRole],
+                    function (err, answer) {
+                        viewEmployees();
+                    }
+                );
+            });
+    });
 };
 
-
-
-
-
-
-//   * View departments, roles, employees
-
-//   * Update employee roles
 
 // Bonus points if you're able to:
 
@@ -289,4 +309,3 @@ console.log("works")
 // SELECT SUM(column_name)
 // FROM table_name
 // WHERE condition;
-
