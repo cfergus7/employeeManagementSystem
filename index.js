@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 const path = require("path");
-const cTable = require("console.table");
+// const cTable = require("console.table");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -15,7 +15,7 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "",
-    database: "employeeDB"
+    database: "employee_db"
 });
 
 // connect to the mysql server and sql database
@@ -86,13 +86,13 @@ function addDepartment() {
         .prompt([{
             type: "input",
             message: "Enter the department ",
-            name: "departments"
+            name: "name"
         }
     ])
     .then(function (res){
         connection.query(
-            "INSERT INTO departments SET ?",{
-                department: res.department
+            "INSERT INTO department SET ?",{
+                name: res.name
             },
             function (err, res){
                 if (err) {
@@ -196,6 +196,43 @@ function addEmployees() {
         })
 }
 
+// function viewDepartments() {
+//     connection.query("SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+//         if (err) throw err;
+//         console.log("\n All employees retrieved from database by department. \n");
+//         console.table(res);
+//         start();
+//     });
+// };
+
+// function viewEmployees(){
+//     connection.query("SELECT first_name, last_name, employee.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+//         if (err) throw err;
+//         console.log("\n All employees retrieved from database by department. \n");
+//         console.table(res);
+//         start();
+//     });
+// };
+
+// function viewRoles() {
+//     connection.query("SELECT first_name, last_name, role.title FROM((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+//         if (err) throw err;
+//         console.log("\n All employees retrieved from database by role. \n");
+//         console.table(res);
+//         start();
+//     });
+// };
+
+function viewEmployees() {
+    connection.query("SELECT first_name, last_name, department.name, role.title, role.salary FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+        if (err) throw err;
+        console.log("\n All employees retrieved from database. \n");
+        console.table(res);
+        start();
+    });
+};
+//view all employees in database by department
+//need to join with other tables
 function viewDepartments() {
     connection.query("SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
         if (err) throw err;
@@ -204,16 +241,8 @@ function viewDepartments() {
         start();
     });
 };
-
-function viewEmployees(){
-    connection.query("SELECT first_name, last_name, department.name, role.title, role.salary FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
-        if (err) throw err;
-        console.log("\n All employees retrieved from database. \n");
-        console.table(res);
-        start();
-    });
-};
-
+//view all employees in database by role
+//need to join with other tables
 function viewRoles() {
     connection.query("SELECT first_name, last_name, role.title FROM((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
         if (err) throw err;
@@ -252,3 +281,4 @@ console.log("works")
 // SELECT SUM(column_name)
 // FROM table_name
 // WHERE condition;
+
