@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS employeeDB;
-CREATE DATABASE employeeDB;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
 
-USE employeeDB;
+USE employee_db;
 
 CREATE TABLE departments (
     id INT NOT NULL AUTO_INCREMENT,
@@ -18,7 +18,7 @@ CREATE TABLE role (
 );
 
 CREATE TABLE employee (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INTEGER NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30) NULL,
     last_name VARCHAR(30) NULL,
     role_id INT NOT NULL,

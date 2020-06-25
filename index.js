@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const path = require("path");
+const cTable = require("console.table");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -13,7 +15,7 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "",
-    database: ""
+    database: "employeeDB"
 });
 
 // connect to the mysql server and sql database
@@ -24,13 +26,13 @@ connection.connect(function (err) {
     start();
 });
 // Build a command-line application that at a minimum allows the user to:
-function start(){
+function start() {
     inquirer
         .prompt({
             name: "action",
             type: "list",
             message: "What would you like to do?",
-            choices:[
+            choices: [
                 "Add department",
                 "Add roles",
                 "Add employees",
@@ -41,32 +43,36 @@ function start(){
                 "exit"
             ]
         })
-        .then(function(answer){
-            switch (answer.action){
+        .then(function (answer) {
+            switch (answer.action) {
                 //   * Add departments
                 case "Add department":
                     addDepartment();
                     break;
-                // Add roles
+                    // Add roles
                 case "Add roles":
                     addRoles();
                     break;
-                // Add employees
+                    // Add employees
                 case "Add employees":
                     addEmployees();
                     break;
-                // View departments
+                    // View departments
                 case "View departments":
                     viewDepartments();
                     break;
-                // View roles
+                    // View roles
                 case "View roles":
                     viewRoles();
                     break;
-
-                case "Update employee roles"
-                    updateRole();
+                
+                case "View  Employees":
+                    viewEmployees();
                     break;
+
+                case "Update employee roles":
+                updateRole();
+                break;
 
                 case "exit":
                     connection.end();
@@ -74,30 +80,153 @@ function start(){
             }
         })
 }
-function addDepartment(){
-    
-    start()
-}
-function addRoles(){
 
-    start()
-}
-function addEmployees(){
+function addDepartment() {
+    inquirer
+        .prompt([{
+            type: "input",
+            message: "Enter the department ",
+            name: "departments"
+        }
+    ])
+    .then(function (res){
+        connection.query(
+            "INSERT INTO departments SET ?",{
+                department: res.department
+            },
+            function (err, res){
+                if (err) {
+                    throw err;
+                }
+                console.table(res);
+            }        
+        )
+    })
+    start();
+};
 
-    start()
-}
-function viewDepartments(){
+function addRoles() {
+    inquirer
+        .prompt([{
+            type: "input",
+            message: "Enter the employee title",
+            name: "title"
+        },
+        {
+            type: "input",
+            message: "Enter the employee salary",
+            name: "salary"
+        },
+        {
+            type: "input",
+            message: "Enter the employee department id",
+            name: "department_id"
+        }
+    ])
+    .then(function (res){
+        connection.query(
+            "INSERT INTO role SET ?", {
+                title: res.title,
+                salary: res.salary,
+                department_id: res.department_id
+            },
+            function (err, res) {
+                if (err) {
+                    throw err;
+                }
+                console.table(res);
+            }
+        );
+        start();
+    })
+};
 
-    start()
+function addEmployees() {
+    inquirer
+        .prompt([{
+                type: "input",
+                message: "Enter employee first name",
+                name: "first_name"
+            },
+            {
+                type: "input",
+                message: "Enter employee last name",
+                name: "last_name"
+            },
+            {
+                type: "input",
+                message: "Enter employee role_id",
+                name: "role_id"
+            },
+            {
+                type: "input",
+                message: "Enter employee manager_id",
+                name: "manager_id"
+            }
+        ])
+        .then(function (answer) {
+            if (answer.first_name === '' || answer.last_name === '' || answer.role_id === '' || answer.manager_id === '') {
+                console.log("Enter a response for all fields or go back to main menu.");
+                inquirer
+                .prompt({
+                    type: "list",
+                    message: "Enter a response for all fields or go back to main menu.",
+                    name: "choices",
+                    choices: [
+                        "Add Employee",
+                        "Main Menu"
+                    ]
+                })
+                .then (function (res)   {
+                    if (res.choices === "Add Employee")    {
+                        addEmployees();
+                    }   else    {
+                        start();
+                    }
+                })
+                
+            } else {
+                connection.query("INSERT INTO employee SET ?",
+                    { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.role_id, manager_id: answer.manager_id }, function (err, res) {
+                        if (err) throw err;
+                        console.log("\n Database with added employee. \n");
+                        viewEmployees();
+                    })
+            } 
+        })
 }
-function viewRoles(){
 
-    start()
-}
-function updateRole(){
+function viewDepartments() {
+    connection.query("SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+        if (err) throw err;
+        console.log("\n All employees retrieved from database by department. \n");
+        console.table(res);
+        start();
+    });
+};
 
-    start()
-}
+function viewEmployees(){
+    connection.query("SELECT first_name, last_name, department.name, role.title, role.salary FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+        if (err) throw err;
+        console.log("\n All employees retrieved from database. \n");
+        console.table(res);
+        start();
+    });
+};
+
+function viewRoles() {
+    connection.query("SELECT first_name, last_name, role.title FROM((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+        if (err) throw err;
+        console.log("\n All employees retrieved from database by role. \n");
+        console.table(res);
+        start();
+    });
+};
+
+function updateRole() {
+console.log("works")
+};
+
 
 
 
