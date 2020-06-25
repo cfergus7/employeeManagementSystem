@@ -44,6 +44,7 @@ function start() {
             ]
         })
         .then(function (answer) {
+            console.log("ANSWER");
             switch (answer.action) {
                 //   * Add departments
                 case "Add department":
@@ -66,7 +67,7 @@ function start() {
                     viewRoles();
                     break;
                 
-                case "View  Employees":
+                case "View employees":
                     viewEmployees();
                     break;
 
@@ -224,7 +225,14 @@ function addEmployees() {
 // };
 
 function viewEmployees() {
-    connection.query("SELECT first_name, last_name, department.name, role.title, role.salary FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);", function (err, res) {
+    const query = `
+    SELECT employee.first_name, employee.last_name, department.name, role.title, role.salary 
+    FROM employee 
+    INNER JOIN role ON employee.role_id = role.id
+    INNER JOIN department ON role.department_id = department.id;`;
+    console.log("VIEW EMPLOYEES");
+
+    connection.query(query, function (err, res) {
         if (err) throw err;
         console.log("\n All employees retrieved from database. \n");
         console.table(res);
